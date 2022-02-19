@@ -1,2 +1,4 @@
 # favorite_things_online
-Online games based on "Eye My Favorite Things"
+Online game based on "Eye My Favorite Things"
+
+TOOD: fill out this README :)
