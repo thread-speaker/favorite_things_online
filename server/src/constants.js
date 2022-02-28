@@ -1,0 +1,9 @@
+const MAXPLAYERS = 6;
+const MAXLABELLENGTH = 25;
+const MAXPLAYERNAMELENGTH = 10;
+
+module.exports = { 
+    MAXPLAYERS,
+    MAXLABELLENGTH,
+    MAXPLAYERNAMELENGTH
+};
