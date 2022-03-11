@@ -1,4 +1,4 @@
-const { MAXPLAYERS } = require('../constants');
+const { MAXPLAYERS, MINPLAYERS } = require('../constants');
 const { GameFull } = require('../errors');
 const Player = require('./player');
 const GameState = require('./gameState');
@@ -38,7 +38,30 @@ class Game {
 
     isFull() {
         return this._players.length >= MAXPLAYERS;
-    }
+    };
+
+    canStart() {
+        return this._players.length >= MINPLAYERS && this._round == 0;
+    };
+
+    isStarted() {
+        return this._round > 0;
+    };
+
+    start() {
+        if (this.canStart()) {
+            this._round = 1;
+        }
+        else {
+            // Not startable
+            
+        }
+    };
+
+    listPlayers() {
+        // Used for the game lobby before starting. returns only players' names
+        return this._players.map(p => p.name);
+    };
 
     gameState() {
         // returns an object representing the "public" form of the game for the UI to display

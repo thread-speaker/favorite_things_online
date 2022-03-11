@@ -24,6 +24,10 @@ class SocketManager {
         return this._socketsByCode[gamecode];
     };
 
+    getCodeBySocket(socket) {
+        return this._codesBySocket[socket];
+    };
+
     gameEmit(gameCode, event, eventData = null) {
         this._socketsByCode[gameCode].forEach(socket => {
             socket.emit(event, eventData);
