@@ -1,4 +1,4 @@
-const actions = require("./actions");
+const lobbyActions = require("./actions/lobbyActions");
 
 const Express = require("express")();
 const Http = require("http").Server(Express);
@@ -11,7 +11,7 @@ const Socketio = require("socket.io")(Http, {
 Socketio.on("connection", socket => {
     socket.emit("welcome");
     socket.on("joinGame", data => {
-        actions.joinGame(socket, data);
+        lobbyActions.joinGame(socket, data);
     });
 });
 

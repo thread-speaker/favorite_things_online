@@ -1,6 +1,6 @@
 const CardValue = require("./cardValue");
-const { MAXLABELLENGTH } = require("./constants");
-const { BadCardValue, CardLabelTooLong } = require("./errors");
+const { MAXLABELLENGTH } = require("../constants");
+const { BadCardValue, CardLabelTooLong } = require("../errors");
 
 class Card {
     #label;

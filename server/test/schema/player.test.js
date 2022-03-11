@@ -1,7 +1,7 @@
 const assert = require('assert');
-const { MAXPLAYERNAMELENGTH } = require('../src/constants');
-const { PlayerNameTooLong } = require('../src/errors');
-const Player = require('../src/player');
+const { MAXPLAYERNAMELENGTH } = require('../../src/constants');
+const { PlayerNameTooLong } = require('../../src/errors');
+const Player = require('../../src/schema/player');
 
 describe('Player', () => {
     describe('constructor', () => {

@@ -1,5 +1,5 @@
 const Game = require("./game");
-const { GameNotFound } = require('../src/errors');
+const { GameNotFound } = require('../errors');
 
 class GameStore {
     static _instance;

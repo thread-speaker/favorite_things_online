@@ -1,7 +1,7 @@
 const assert = require('assert');
-const Game = require('../src/game');
-const { GameNotFound } = require('../src/errors');
-const GameStore = require('../src/gameStore');
+const Game = require('../../src/schema/game');
+const { GameNotFound } = require('../../src/errors');
+const GameStore = require('../../src/schema/gameStore');
 
 describe('GameStore', () => {
     beforeEach(() => {

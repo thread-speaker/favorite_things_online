@@ -1,6 +1,5 @@
 const assert = require('assert');
-const { GameNotFound } = require('../src/errors');
-const GameStore = require('../src/gameStore');
+const GameStore = require('../src/schema/gameStore');
 const SocketManager = require('../src/socketManager');
 
 describe('SocketManager', () => {

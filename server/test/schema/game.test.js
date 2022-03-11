@@ -1,8 +1,8 @@
 const assert = require('assert');
-const { MAXPLAYERS } = require('../src/constants');
-const { GameFull } = require('../src/errors');
-const Game = require('../src/game');
-const Player = require('../src/player');
+const { MAXPLAYERS } = require('../../src/constants');
+const { GameFull } = require('../../src/errors');
+const Game = require('../../src/schema/game');
+const Player = require('../../src/schema/player');
 
 describe('Game', () => {
     describe('constructor', () => {

@@ -1,4 +1,4 @@
-const GameStore = require("./gameStore");
+const GameStore = require("./schema/gameStore");
 
 class SocketManager {
     static _instance;

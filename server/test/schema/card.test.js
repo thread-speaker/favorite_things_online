@@ -1,8 +1,8 @@
 const assert = require('assert');
-const Card = require('../src/card');
-const CardValue = require('../src/cardValue');
-const { MAXLABELLENGTH } = require('../src/constants');
-const { CardLabelTooLong } = require('../src/errors');
+const Card = require('../../src/schema/card');
+const CardValue = require('../../src/schema/cardValue');
+const { MAXLABELLENGTH } = require('../../src/constants');
+const { CardLabelTooLong } = require('../../src/errors');
 
 describe('Card', () => {
     describe('constructor', () => {

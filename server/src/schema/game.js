@@ -1,7 +1,7 @@
-const { MAXPLAYERS } = require('./constants');
-const { GameFull } = require('./errors');
-const GameState = require('./gameState');
+const { MAXPLAYERS } = require('../constants');
+const { GameFull } = require('../errors');
 const Player = require('./player');
+const GameState = require('./gameState');
 
 class Game {
     constructor(codeLength = 5) {

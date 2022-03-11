@@ -1,5 +1,5 @@
-const GameStore = require("./gameStore");
-const SocketManager = require("./socketManager");
+const GameStore = require("../gameStore");
+const SocketManager = require("../socketManager");
 
 let joinGame = (socket, actionData) => {
     let playerName = actionData.playerName;
@@ -14,9 +14,7 @@ let joinGame = (socket, actionData) => {
             let game = GameStore.getInstance().getGameByCode(gameCode);
             game.addPlayer(playerName, socket);
             
-            // define incoming socket.on('gameState', data => {  }) actions
-            
-            socketManager.gameEmit(gameCode, 'gameState', game.gameState());
+            socketManager.gameEmit(gameCode, 'playerList', game.gameState());
         }
         catch {
             socketManager.disconnectSocketfromGame(socket, false)

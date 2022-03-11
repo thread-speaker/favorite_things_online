@@ -1,5 +1,5 @@
-const { MAXPLAYERNAMELENGTH } = require("./constants");
-const { PlayerNameTooLong } = require("./errors");
+const { MAXPLAYERNAMELENGTH } = require("../constants");
+const { PlayerNameTooLong } = require("../errors");
 
 class Player {
     constructor(playerName, socket) {
