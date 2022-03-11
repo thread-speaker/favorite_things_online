@@ -24,11 +24,11 @@ class Game {
         return this._code;
     };
 
-    addPlayer(playerName) {
+    addPlayer(playerName, socket) {
         if (this.isFull()) {
             throw new GameFull();
         }
-        let newPlayer = new Player(playerName);
+        let newPlayer = new Player(playerName, socket);
         this._players.push(newPlayer);
     };
 
@@ -39,6 +39,13 @@ class Game {
     isFull() {
         return this._players.length >= MAXPLAYERS;
     }
+
+    gameState() {
+        // returns an object representing the "public" form of the game for the UI to display
+        return {
+            players: this._players.map(p => p.gameState()),
+        };
+    };
 };
 
 exports = module.exports = Game;

@@ -9,6 +9,10 @@ class GameStore {
         }
         return GameStore._instance
     };
+    static resetStore() {
+        GameStore.getInstance();
+        GameStore._instance._gamesByCode = {};
+    };
 
     constructor() {
         this._gamesByCode = {};

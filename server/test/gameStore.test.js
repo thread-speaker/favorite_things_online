@@ -1,10 +1,13 @@
 const assert = require('assert');
-const exp = require('constants');
 const Game = require('../src/game');
 const { GameNotFound } = require('../src/errors');
 const GameStore = require('../src/gameStore');
 
 describe('GameStore', () => {
+    beforeEach(() => {
+        GameStore.resetStore();
+    });
+
     describe('singleton instance', () => {
         it('always gets the same instance', () => {
             let instance1 = GameStore.getInstance();

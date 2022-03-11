@@ -11,7 +11,7 @@ describe('Player', () => {
                 longName = longName + "M";
             }
 
-            assert.throws(() => { new Player(longName) }, PlayerNameTooLong);
+            assert.throws(() => { new Player(longName, null) }, PlayerNameTooLong);
         });
     });
 });

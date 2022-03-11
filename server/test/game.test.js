@@ -36,7 +36,7 @@ describe('Game', () => {
         it('adds new players to pool', () => {
             let newGame = new Game();
             let playerName = 'Amaya'
-            newGame.addPlayer(playerName);
+            newGame.addPlayer(playerName, {});
             actual = newGame._players;
             assert.equal(actual.length, 1);
             assert.equal(actual[0].name, playerName)
@@ -45,10 +45,10 @@ describe('Game', () => {
         it('will not add players to pool if it is full', () => {
             let newGame = new Game();
             for (let i = 0; i < MAXPLAYERS; i++) {
-                newGame._players.push(new Player("Player " + i));
+                newGame._players.push(new Player("Player " + i, {}));
             }
 
-            assert.throws(() => {newGame.addPlayer('Amaya')}, GameFull);
+            assert.throws(() => {newGame.addPlayer('Amaya', {})}, GameFull);
         });
 
         it('indicates if the player pool is full', () => {
@@ -56,7 +56,7 @@ describe('Game', () => {
 
             assert.equal(newGame.isFull(), false);
             for (let i = 0; i < MAXPLAYERS; i++) {
-                newGame._players.push(new Player("Player " + i));
+                newGame._players.push(new Player("Player " + i, {}));
             }
             assert.equal(newGame.isFull(), true);
         });
