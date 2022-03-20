@@ -11,13 +11,7 @@ const Socketio = require("socket.io")(Http, {
 Socketio.on("connection", socket => {
     socket.emit("welcome");
 
-    // Register lobby events
-    socket.on("joinGame", data => {
-        lobbyActions.joinGame(socket, data);
-    });
-    socket.on("startGame", data => {
-        lobbyActions.startGame(socket, data);
-    });
+    lobbyActions.registerLobbyActions(socket);
 });
 
 Http.listen(3000, () => {

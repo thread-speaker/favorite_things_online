@@ -1,7 +1,24 @@
 const GameStore = require("../schema/gameStore");
 const SocketManager = require("../socketManager");
 
+const registerLobbyActions = (socket) => {
+    socket.on("joinGame", data => {
+        joinGame(socket, data);
+    });
+    socket.on("startGame", data => {
+        startGame(socket, data);
+    });
+};
+
 const joinGame = (socket, actionData) => {
+    // Initial data checks
+    if (!'playerName' in actionData) {
+        socket.emit('error', 'data must include playerName');
+    }
+    if (!'gameCode' in actionData) {
+        socket.emit('error', 'data must include gameCode');
+    }
+
     let playerName = actionData.playerName;
     let gameCode = actionData.gameCode;
 
@@ -43,6 +60,7 @@ const startGame = (socket, actionData) => {
 };
 
 exports = module.exports = {
+    registerLobbyActions,
     joinGame,
     startGame,
 };
