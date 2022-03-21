@@ -60,7 +60,10 @@ class Game {
 
     listPlayers() {
         // Used for the game lobby before starting. returns only players' names
-        return this._players.map(p => p.name);
+        return {
+            'players': this._players.map(p => p.name),
+            'gameCode': this._code,
+        };
     };
 
     gameState() {

@@ -2,6 +2,9 @@ const GameStore = require("../schema/gameStore");
 const SocketManager = require("../socketManager");
 
 const registerLobbyActions = (socket) => {
+    socket.on("createGame", data => {
+        createGame(socket, data);
+    });
     socket.on("joinGame", data => {
         joinGame(socket, data);
     });
@@ -10,13 +13,33 @@ const registerLobbyActions = (socket) => {
     });
 };
 
+const createGame = (socket, actionData) => {
+    // Initial data check
+    if (typeof actionData === 'string' || actionData instanceof String) {
+        actionData = {
+            'playerName': actionData,
+        };
+    }
+    if (!('playerName' in actionData)) {
+        socket.emit('error', 'data must include playerName');
+        return;
+    }
+
+    const gameStore = GameStore.getInstance();
+    const gamecode = gameStore.generateNewGame();
+    actionData['gameCode'] = gamecode;
+    joinGame(socket, actionData);
+};
+
 const joinGame = (socket, actionData) => {
     // Initial data checks
-    if (!'playerName' in actionData) {
+    if (!('playerName' in actionData)) {
         socket.emit('error', 'data must include playerName');
+        return;
     }
-    if (!'gameCode' in actionData) {
+    if (!('gameCode' in actionData)) {
         socket.emit('error', 'data must include gameCode');
+        return;
     }
 
     let playerName = actionData.playerName;
@@ -36,10 +59,12 @@ const joinGame = (socket, actionData) => {
         catch {
             socketManager.disconnectSocketfromGame(socket, false)
             socket.emit('error', 'failed to retrieve game info');
+            return;
         }
     }
     else {
         socket.emit('error', 'can not find game or it is full');
+        return;
     }
 };
 

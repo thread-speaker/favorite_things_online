@@ -45,9 +45,6 @@ describe("lobbyActions", () => {
       // Generate a game
       const gameStore = GameStore.getInstance();
       const gameCode = gameStore.generateNewGame();
-      // for (let i = 0; i < MAXPLAYERS; i++) {
-      //   newGame._players.push(new Player("Player " + i, {}));
-      // }
 
       clientSocket.on("playerList", (arg) => {
         done();
@@ -95,7 +92,7 @@ describe("lobbyActions", () => {
     it("fails for missing gameCode", (done) => {
       // Generate a game
       clientSocket.on("error", (arg) => {
-        assert.equal(arg, 'can not find game or it is full');
+        assert.equal(arg, 'data must include gameCode');
         done();
       });
 
@@ -107,12 +104,47 @@ describe("lobbyActions", () => {
     it("fails for missing playerName", (done) => {
       // Generate a game
       clientSocket.on("error", (arg) => {
-        assert.equal(arg, 'can not find game or it is full');
+        assert.equal(arg, 'data must include playerName');
         done();
       });
 
       clientSocket.emit("joinGame", {
         'gameCode': 1234567,
+      });
+    });
+  });
+
+  describe('createGame', () => {
+    it('creates and joins a game', (done) => {
+      clientSocket.on("playerList", (arg) => {
+        assert.equal(arg.players.length, 1);
+        assert.equal(arg.players[0], 'Amaya');
+        done();
+      });
+
+      clientSocket.emit("createGame", {
+        'playerName': 'Amaya',
+      });
+    });
+    
+    it('will accept a raw string as playerName', (done) => {
+      clientSocket.on("playerList", (arg) => {
+        assert.equal(arg.players.length, 1);
+        assert.equal(arg.players[0], 'Amaya');
+        done();
+      });
+
+      clientSocket.emit("createGame", 'Amaya');
+    });
+    
+    it('fails without a playerName', (done) => {
+      clientSocket.on("error", (arg) => {
+        assert.equal(arg, 'data must include playerName');
+        done();
+      });
+
+      clientSocket.emit("createGame", {
+        'foo': 'bar',
       });
     });
   });
