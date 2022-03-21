@@ -69,13 +69,14 @@ const joinGame = (socket, actionData) => {
 };
 
 const startGame = (socket, actionData) => {
-    let socketManager = SocketManager.getInstance();
-    let gameCode = SocketManager.getInstance().getCodeBySocket(socket);
-    let game = GameStore.getInstance().getGameByCode(gameCode);
-    let canStart = game.canStart();
+    const socketManager = SocketManager.getInstance();
+    const gameCode = SocketManager.getInstance().getCodeBySocket(socket);
+    const game = GameStore.getInstance().getGameByCode(gameCode);
+    const canStart = game.canStart();
     if (canStart) {
         game.start();
-        socketManager.gameEmit(gameCode, 'chooseCategory', game.gameState());
+        const gameState = game.publicGameState();
+        socketManager.gameEmit(gameCode, 'chooseCategory', gameState);
     }
     else{
         let msg = 'not enough players';
@@ -86,6 +87,7 @@ const startGame = (socket, actionData) => {
 
 exports = module.exports = {
     registerLobbyActions,
+    createGame,
     joinGame,
     startGame,
 };

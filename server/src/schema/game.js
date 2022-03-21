@@ -1,5 +1,5 @@
 const { MAXPLAYERS, MINPLAYERS } = require('../constants');
-const { GameFull } = require('../errors');
+const { GameFull, GameNotStartable } = require('../errors');
 const Player = require('./player');
 const GameState = require('./gameState');
 
@@ -18,6 +18,7 @@ class Game {
         this._players = [];
         this._round = 0; // 0 is for setup. Gameplay will take place during rounds 1-3. 4 means it's finished.
         this._state = GameState.WaitingforPlayers;
+        this._tricks = [];
     };
 
     getCode() {
@@ -50,26 +51,43 @@ class Game {
 
     start() {
         if (this.canStart()) {
+            let _shufflePlayers = () => {
+                // Fisher-Yates shuffle
+                let currentIndex = this._players.length,  randomIndex;
+                while (currentIndex != 0) {
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex--;
+                    [this._players[currentIndex], this._players[randomIndex]] = [
+                        this._players[randomIndex], this._players[currentIndex]];
+                }
+            };
+
+            _shufflePlayers(); // Shuffling players will decide turn order during card playing phases.
             this._round = 1;
+            this.gameState = GameState.ChooseCategory;
+            return true;
         }
         else {
-            // Not startable
-            
+            throw new GameNotStartable();
         }
     };
 
     listPlayers() {
         // Used for the game lobby before starting. returns only players' names
         return {
-            'players': this._players.map(p => p.name),
-            'gameCode': this._code,
+            players: this._players.map(p => p.name),
+            gameCode: this._code,
         };
     };
 
-    gameState() {
+    publicGameState() {
         // returns an object representing the "public" form of the game for the UI to display
         return {
             players: this._players.map(p => p.gameState()),
+            gameCode: this._code,
+            round: this._round,
+            phase: this.gameState,
+            currentTrick: null, // TODO: populate this during card play phases
         };
     };
 };

@@ -2,21 +2,23 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const Client = require("socket.io-client");
 const assert = require('assert');
-const { registerLobbyActions } = require("../../src/actions/lobbyActions");
+const { registerLobbyActions, createGame } = require("../../src/actions/lobbyActions");
 const SocketManager = require("../../src/socketManager");
 const GameStore = require("../../src/schema/gameStore");
-const { MAXPLAYERS } = require("../../src/constants");
+const { MAXPLAYERS, MINPLAYERS } = require("../../src/constants");
 const Player = require("../../src/schema/player");
 
 describe("lobbyActions", () => {
-  let io, serverSocket, clientSocket;
+  let io, serverSocket, clientSocket, clientSocket2, clientSocket3, port;
 
   before((done) => {
     const httpServer = createServer();
     io = new Server(httpServer);
     httpServer.listen(() => {
-      const port = httpServer.address().port;
+      port = httpServer.address().port;
       clientSocket = new Client(`http://localhost:${port}`);
+      clientSocket2 = new Client(`http://localhost:${port}`);
+      clientSocket3 = new Client(`http://localhost:${port}`);
       io.on("connection", (socket) => {
         serverSocket = socket;
         registerLobbyActions(socket);
@@ -28,6 +30,8 @@ describe("lobbyActions", () => {
   after(() => {
     io.close();
     clientSocket.close();
+    clientSocket2.close();
+    clientSocket3.close();
   });
 
   beforeEach(() => {
@@ -36,8 +40,45 @@ describe("lobbyActions", () => {
   });
 
   afterEach(() => {
-    clientSocket.removeListener('playerList')
-    clientSocket.removeListener('error')
+    clientSocket.removeListener('playerList');
+    clientSocket.removeListener('chooseCategory');
+    clientSocket.removeListener('error');
+    clientSocket3.removeListener('playerList');
+  });
+
+  describe('createGame', () => {
+    it('creates and joins a game', (done) => {
+      clientSocket.on("playerList", (arg) => {
+        assert.equal(arg.players.length, 1);
+        assert.equal(arg.players[0], 'Amaya');
+        done();
+      });
+
+      clientSocket.emit("createGame", {
+        'playerName': 'Amaya',
+      });
+    });
+    
+    it('will accept a raw string as playerName', (done) => {
+      clientSocket.on("playerList", (arg) => {
+        assert.equal(arg.players.length, 1);
+        assert.equal(arg.players[0], 'Amaya');
+        done();
+      });
+
+      clientSocket.emit("createGame", 'Amaya');
+    });
+    
+    it('fails without a playerName', (done) => {
+      clientSocket.on("error", (arg) => {
+        assert.equal(arg, 'data must include playerName');
+        done();
+      });
+
+      clientSocket.emit("createGame", {
+        'foo': 'bar',
+      });
+    });
   });
 
   describe("joinGame", () => {
@@ -114,40 +155,64 @@ describe("lobbyActions", () => {
     });
   });
 
-  describe('createGame', () => {
-    it('creates and joins a game', (done) => {
-      clientSocket.on("playerList", (arg) => {
-        assert.equal(arg.players.length, 1);
-        assert.equal(arg.players[0], 'Amaya');
+  describe('startGame', () => {
+    it('works on happy path (system create-join-start)', (done) => {
+      // Game is started
+      clientSocket.on("chooseCategory", (res) => {
         done();
       });
 
-      clientSocket.emit("createGame", {
-        'playerName': 'Amaya',
+      // Players are in, time to start
+      clientSocket3.on("playerList", (res) => {
+        clientSocket.emit("startGame");
       });
+
+      // Once the game is created, add some extra dummy players
+      // to get the game in a good state to test with
+      clientSocket.on("playerList", (res) => {
+        const gameCode = res.gameCode;
+        for (let i = 0; i < MINPLAYERS - 1; i++) {
+          clientSocket2.emit("joinGame", {
+            playerName: "Sein",
+            gameCode,
+          });
+          clientSocket3.emit("joinGame", {
+            playerName: "Reykel",
+            gameCode,
+          });
+        }
+      });
+
+      clientSocket.emit("createGame", "Amaya");
+    });
+
+    it('fails if not enough players', (done) => {
+      clientSocket.on("error", (res) => {
+        assert.equal(res, 'not enough players');
+        done();
+      });
+
+      createGame(serverSocket, "Amaya");
+      clientSocket.emit("startGame");
     });
     
-    it('will accept a raw string as playerName', (done) => {
-      clientSocket.on("playerList", (arg) => {
-        assert.equal(arg.players.length, 1);
-        assert.equal(arg.players[0], 'Amaya');
+    it('fails if game already started', (done) => {
+      clientSocket.on("error", (res) => {
+        assert.equal(res, 'game already started');
         done();
       });
 
-      clientSocket.emit("createGame", 'Amaya');
-    });
-    
-    it('fails without a playerName', (done) => {
-      clientSocket.on("error", (arg) => {
-        assert.equal(arg, 'data must include playerName');
-        done();
-      });
-
-      clientSocket.emit("createGame", {
-        'foo': 'bar',
-      });
+      // Setup a game and mark it as started
+      createGame(serverSocket, "Amaya");
+      const gameCode = SocketManager.getInstance()._codesBySocket[serverSocket];
+      const game = GameStore.getInstance().getGameByCode(gameCode);
+      for (let i = 0; i < MINPLAYERS; i++) {
+        game.addPlayer('Player ' + i, {});
+      }
+      game.start();
+      
+      // Attempt to start the previously started game
+      clientSocket.emit("startGame");
     });
   });
-
-  // TODO: test startGame
 });
